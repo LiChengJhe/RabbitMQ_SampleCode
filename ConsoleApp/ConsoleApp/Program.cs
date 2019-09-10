@@ -17,19 +17,19 @@ namespace ConsoleApp
         }
         public void Publisher()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using (var connection = factory.CreateConnection())
+            ConnectionFactory factory = new ConnectionFactory() { HostName = "localhost" };
+            using (IConnection connection = factory.CreateConnection())
             {
-                using (var channel = connection.CreateModel())
+                using (IModel channel = connection.CreateModel())
                 {
                     channel.ExchangeDeclare(exchange: "test-queue-direct", type: ExchangeType.Direct, durable: true, autoDelete: false);
                     channel.QueueDeclare(queue: "test-queue", durable: false, exclusive: false, autoDelete: false, arguments: null);
-                    channel.QueueBind(queue: "test-queue", exchange: "test-queue-direct", routingKey: "routing-1");
+                    channel.QueueBind(queue: "test-queue", exchange: "test-queue.direct", routingKey: "routing-1");
 
                     string message = "Hello World";
                     var body = Encoding.UTF8.GetBytes(message);
 
-                    channel.BasicPublish(exchange: "test-queue-direct",
+                    channel.BasicPublish(exchange: "test-queue.direct",
                                          routingKey: "routing-1",
                                          basicProperties: null,
                                          body: body);
